@@ -287,13 +287,13 @@ namespace :magento do
       end
       Rake::Task['magento:setup:permissions'].reenable  ## make task perpetually callable
     end
-    
+
     namespace :di do
       desc 'Runs dependency injection compilation routine'
       task :compile do
         on release_roles :all do
           within release_path do
-            output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
+            output = capture :magento, 'setup:di:compile', '--no-ansi', verbosity: Logger::INFO
 
             # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
             if output.to_s.include? 'Errors during compilation'
