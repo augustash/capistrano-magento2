@@ -38,7 +38,14 @@ namespace :deploy do
       if test "[ -f #{current_path}/bin/magento ]"
         within current_path do
           begin
-            execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
+            if fetch(:magento_deploy_maintenance)
+              output = capture :magento, 'maintenance:enable', verbosity: Logger::INFO
+
+              # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
+              if output.to_s.include? 'PHP Fatal error'
+                raise Exception, 'DI compilation command execution failed'
+              end
+            end
           rescue Exception => e
             info "current_path maintenance:enable EXCEPTION: #{e.message}"
           end
