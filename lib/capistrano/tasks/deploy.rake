@@ -37,14 +37,18 @@ namespace :deploy do
     on release_roles :all do
       if test "[ -f #{current_path}/bin/magento ]"
         within current_path do
-          execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
+          begin
+            execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
+          rescue Exception => e
+            info "current_path maintenance:enable EXCEPTION: #{e.message}"
+          end
         end
       end
     end
 
     invoke 'magento:setup:db:schema:upgrade'
     invoke 'magento:setup:db:data:upgrade'
-    
+
     # The app:config:import command was introduced in 2.2.0; check if it exists before invoking it
     on primary fetch(:magento_deploy_setup_role) do
       within release_path do
