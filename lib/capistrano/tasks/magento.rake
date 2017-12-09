@@ -113,10 +113,10 @@ namespace :magento do
             composer_flags += ' --optimize-autoloader'
           end
 
-          execute :composer, "install #{composer_flags} 2>&1"
+          execute :composer, "install", "--no-dev", "--prefer-dist", "--no-interaction", "--optimize-autoloader", "2>&1"
 
           if test "[ -f #{release_path}/update/composer.json ]"   # can't count on this, but emit warning if not present
-            execute :composer, "install #{composer_flags} -d ./update 2>&1"
+            execute :composer, "install", "--no-dev", "--prefer-dist", "--no-interaction", "--optimize-autoloader", "-d", "./update 2>&1"
           else
             puts "\e[0;31m    Warning: ./update/composer.json does not exist in repository!\n\e[0m\n"
           end
